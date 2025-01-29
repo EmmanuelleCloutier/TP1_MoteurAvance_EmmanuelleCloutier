@@ -100,17 +100,24 @@ class Program
 
     static void PackageProject(string projectPath, string packagePath)
     {
-        string unrealEnginePath = @"C:\Program Files\Epic Games\UE_5.0";  // Change ce chemin si nécessaire
-        string uatPath = Path.Combine(unrealEnginePath, "Engine", "Build", "BatchFiles", "RunUAT.bat");
+        string uatPath = @"C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat";
 
+        
         if (!File.Exists(uatPath))
         {
             Console.WriteLine("RunUAT.bat introuvable.");
             return;
         }
 
-        string arguments = $"BuildCookRun -project=\"{projectPath}\" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -build -stage -package -archive -archivedirectory=\"{packagePath}\"";
+       
+        if (!Directory.Exists(packagePath))
+        {
+            Directory.CreateDirectory(packagePath);
+        }
+
         
+        string arguments = $"BuildCookRun -project=\"{projectPath}\" -platform=Win64 -clientconfig=Development -cook -allmaps -build -stage -archive -archivedirectory=\"{packagePath}\"";
+
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = uatPath,
@@ -119,17 +126,24 @@ class Program
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
-            WorkingDirectory = Path.Combine(unrealEnginePath, "Engine", "Build", "BatchFiles") 
+            WorkingDirectory = Path.GetDirectoryName(uatPath)
         };
 
         try
         {
+            
             Process process = Process.Start(startInfo);
-            process.WaitForExit();  
 
-           
+            
             string output = process.StandardOutput.ReadToEnd();
             string errors = process.StandardError.ReadToEnd();
+
+            process.WaitForExit();  
+            
+            if (process.ExitCode != 0)
+            {
+                Console.WriteLine("Le processus a échoué avec le code de sortie : " + process.ExitCode);
+            }
 
             Console.WriteLine("Sortie du processus : " + output);
             if (!string.IsNullOrEmpty(errors))
@@ -144,4 +158,6 @@ class Program
             Console.WriteLine("Erreur lors du démarrage du processus de packaging : " + ex.Message);
         }
     }
+
+
 }
