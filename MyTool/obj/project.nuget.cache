@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "atw/1EtMIxk=",
+  "dgSpecHash": "ICk/+rplTVI=",
   "success": true,
   "projectFilePath": "C:\\Users\\emman\\Documents\\GitHub\\TP1_MoteurAvance_EmmanuelleCloutier\\MyTool\\MyTool.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\emman\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

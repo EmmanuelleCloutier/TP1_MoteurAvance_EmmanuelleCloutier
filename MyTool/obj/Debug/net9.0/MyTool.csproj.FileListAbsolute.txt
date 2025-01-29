@@ -13,3 +13,6 @@ C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\obj\D
 C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\obj\Debug\net9.0\MyTool.pdb
 C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\obj\Debug\net9.0\MyTool.genruntimeconfig.cache
 C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\obj\Debug\net9.0\ref\MyTool.dll
+C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\bin\Debug\net9.0\Newtonsoft.Json.dll
+C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\obj\Debug\net9.0\MyTool.csproj.AssemblyReference.cache
+C:\Users\emman\Documents\GitHub\TP1_MoteurAvance_EmmanuelleCloutier\MyTool\obj\Debug\net9.0\MyTool.csproj.Up2Date
