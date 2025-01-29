@@ -7,17 +7,14 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Exemple pour l'argument "show-infos"
         if (args.Length > 1 && args[1] == "show-infos")
         {
             ShowProjectInfo(args[0]);
         }
-        // Exemple pour l'argument "build"
         else if (args.Length > 1 && args[1] == "build")
         {
             BuildProject(args[0]);
         }
-        // Exemple pour l'argument "package"
         else if (args.Length > 1 && args[1] == "package")
         {
             PackageProject(args[0], args[2]);
@@ -52,41 +49,99 @@ class Program
 
     static void BuildProject(string projectPath)
     {
-        string ubtPath = "./Engine/Build/BatchFiles/Build.bat";  // Chemin vers UBT
+        string unrealEnginePath = @"C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles";
+        string ubtPath = Path.Combine(unrealEnginePath, "Build.bat");
+
+        // Vérifier si le fichier Build.bat existe
+        if (!File.Exists(ubtPath))
+        {
+            Console.WriteLine("Build.bat introuvable.");
+            return;
+        }
+
+        // Arguments pour le processus
         string arguments = $"\"{projectPath}\" Win64 Development";
 
-        // Démarrer le processus pour compiler le projet
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = ubtPath,
             Arguments = arguments,
-            RedirectStandardOutput = true,  // Pour récupérer la sortie du processus
+            RedirectStandardOutput = true,  
+            RedirectStandardError = true,
             UseShellExecute = false,
-            CreateNoWindow = true
+            CreateNoWindow = true,
+            WorkingDirectory = unrealEnginePath  // Assure-toi que le répertoire de travail est le bon
         };
 
-        Process process = Process.Start(startInfo);
-        process.WaitForExit();  // Attendre la fin de la compilation
+        try
+        {
+            // Démarrer le processus
+            Process process = Process.Start(startInfo);
+            process.WaitForExit();  // Attendre que le processus se termine
 
-        Console.WriteLine("Build completed.");
+            // Lire la sortie et les erreurs
+            string output = process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+            Console.WriteLine("Sortie du processus : " + output);
+            if (!string.IsNullOrEmpty(errors))
+            {
+                Console.WriteLine("Erreurs : " + errors);
+            }
+
+            Console.WriteLine("Build terminé.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur lors du démarrage du processus de compilation : " + ex.Message);
+        }
     }
+
 
     static void PackageProject(string projectPath, string packagePath)
     {
-        string uatPath = "./Engine/Build/BatchFiles/RunUAT.bat";  // Chemin vers UAT
-        string arguments = $"BuildCookRun -project=\"{projectPath}\" -noP4 -platform=Win64 -clientconfig=Shipping -cook -allmaps -archive -archivedirectory=\"{packagePath}\"";
+        string unrealEnginePath = @"C:\Program Files\Epic Games\UE_5.0";  // Change ce chemin si nécessaire
+        string uatPath = Path.Combine(unrealEnginePath, "Engine", "Build", "BatchFiles", "RunUAT.bat");
 
+        if (!File.Exists(uatPath))
+        {
+            Console.WriteLine("RunUAT.bat introuvable.");
+            return;
+        }
+
+        string arguments = $"BuildCookRun -project=\"{projectPath}\" -noP4 -platform=Win64 -clientconfig=Development -serverconfig=Development -cook -allmaps -build -stage -package -archive -archivedirectory=\"{packagePath}\"";
+        
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = uatPath,
             Arguments = arguments,
             RedirectStandardOutput = true,
+            RedirectStandardError = true,
             UseShellExecute = false,
-            CreateNoWindow = true
+            CreateNoWindow = true,
+            WorkingDirectory = Path.Combine(unrealEnginePath, "Engine", "Build", "BatchFiles") 
         };
 
-        Process process = Process.Start(startInfo);
-        process.WaitForExit();
-        Console.WriteLine("Packaging completed.");
+        try
+        {
+            Process process = Process.Start(startInfo);
+            process.WaitForExit();  
+
+           
+            string output = process.StandardOutput.ReadToEnd();
+            string errors = process.StandardError.ReadToEnd();
+
+            Console.WriteLine("Sortie du processus : " + output);
+            if (!string.IsNullOrEmpty(errors))
+            {
+                Console.WriteLine("Erreurs : " + errors);
+            }
+
+            Console.WriteLine("Packaging terminé.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Erreur lors du démarrage du processus de packaging : " + ex.Message);
+        }
     }
 }
