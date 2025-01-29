@@ -7,6 +7,7 @@ class Program
 {
     static void Main(string[] args)
     {
+        //pour declancher les bonnes fonctions selon les arguments entres 
         if (args.Length > 1 && args[1] == "show-infos")
         {
             ShowProjectInfo(args[0]);
@@ -25,17 +26,17 @@ class Program
     {
         try
         {
-            // Lire le fichier UPROJECT
+            //lire contenu du UPROJECT
             string jsonContent = File.ReadAllText(projectPath);
             JObject project = JObject.Parse(jsonContent);
-
-            // Extraire les informations du fichier JSON
+            
+            //Prendre informations du fichier 
             string gameName = project["ProjectName"]?.ToString();
             string unrealVersion = project["EngineVersion"]?.ToString();
             bool fromSource = project["FromSource"]?.ToString() == "true";
             var plugins = project["Plugins"]?.ToString();
-
-            // Afficher les informations à l'utilisateur
+            
+            //Affiche les demandes 
             Console.WriteLine($"Game Name: {gameName}");
             Console.WriteLine($"Unreal Version: {unrealVersion}");
             Console.WriteLine(fromSource ? "From Source: Yes" : "From Source: No");
@@ -49,19 +50,20 @@ class Program
 
     static void BuildProject(string projectPath)
     {
+        //pour le chemin du Build.bat 
         string unrealEnginePath = @"C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles";
         string ubtPath = Path.Combine(unrealEnginePath, "Build.bat");
-
-        // Vérifier si le fichier Build.bat existe
+        
         if (!File.Exists(ubtPath))
         {
             Console.WriteLine("Build.bat introuvable.");
             return;
         }
-
-        // Arguments pour le processus
+        
+        //definir des arguments pour le processus 
         string arguments = $"\"{projectPath}\" Win64 Development";
 
+        //creer un objet processStartInfo pour configurer le processus
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = ubtPath,
@@ -70,19 +72,20 @@ class Program
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true,
-            WorkingDirectory = unrealEnginePath  // Assure-toi que le répertoire de travail est le bon
+            WorkingDirectory = unrealEnginePath  
         };
 
         try
         {
-            // Démarrer le processus
+            //demarre le processus 
             Process process = Process.Start(startInfo);
-            process.WaitForExit();  // Attendre que le processus se termine
+            process.WaitForExit();  
 
-            // Lire la sortie et les erreurs
+            //Lecture de la reponse du processus 
             string output = process.StandardOutput.ReadToEnd();
             string errors = process.StandardError.ReadToEnd();
 
+            //Afficher pour utilisateur 
             Console.WriteLine("Sortie du processus : " + output);
             if (!string.IsNullOrEmpty(errors))
             {
@@ -100,6 +103,7 @@ class Program
 
     static void PackageProject(string projectPath, string packagePath)
     {
+        //Chemine vers le RunUAT.bat
         string uatPath = @"C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat";
 
         
@@ -109,15 +113,16 @@ class Program
             return;
         }
 
-       
+       //Verification si dossier build existe
         if (!Directory.Exists(packagePath))
         {
             Directory.CreateDirectory(packagePath);
         }
 
-        
+        //definir settings de packaging 
         string arguments = $"BuildCookRun -project=\"{projectPath}\" -platform=Win64 -clientconfig=Development -cook -allmaps -build -stage -archive -archivedirectory=\"{packagePath}\"";
 
+        //Creer un object comme dans le build 
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = uatPath,
@@ -131,13 +136,13 @@ class Program
 
         try
         {
-            
+            //demarre le processus 
             Process process = Process.Start(startInfo);
 
-            
+            //lire sa reponse 
             string output = process.StandardOutput.ReadToEnd();
             string errors = process.StandardError.ReadToEnd();
-
+            
             process.WaitForExit();  
             
             if (process.ExitCode != 0)
@@ -145,6 +150,7 @@ class Program
                 Console.WriteLine("Le processus a échoué avec le code de sortie : " + process.ExitCode);
             }
 
+            //Affiche resultat sur la console 
             Console.WriteLine("Sortie du processus : " + output);
             if (!string.IsNullOrEmpty(errors))
             {
